@@ -185,11 +185,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   color: Colors.red[50],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  Icons.favorite,
-                  color: Colors.red[400],
-                  size: 20,
-                ),
+                child: Icon(Icons.favorite, color: Colors.red[400], size: 20),
               ),
               SizedBox(width: 12),
               Column(
@@ -205,10 +201,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   ),
                   Text(
                     '${favoriteNews.length} ข่าว',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[500],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                   ),
                 ],
               ),
@@ -304,7 +297,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               Text('ลบทั้งหมด'),
             ],
           ),
-          content: Text('ต้องการลบข่าวโปรดทั้งหมดหรือไม่? การกระทำนี้ไม่สามารถกู้คืนได้'),
+          content: Text(
+            'ต้องการลบข่าวโปรดทั้งหมดหรือไม่? การกระทำนี้ไม่สามารถกู้คืนได้',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -374,7 +369,8 @@ class FavoriteNewsCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                    article.imageUrl ?? 'https://via.placeholder.com/100x80?text=No+Image',
+                  article.urlToImage ??
+                      'https://via.placeholder.com/100x80?text=No+Image',
                   width: 100,
                   height: 80,
                   fit: BoxFit.cover,
@@ -414,10 +410,7 @@ class FavoriteNewsCard extends StatelessWidget {
                     SizedBox(height: 4),
                     Text(
                       article.source ?? '',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[500],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                     ),
                     SizedBox(height: 8),
                     Row(
