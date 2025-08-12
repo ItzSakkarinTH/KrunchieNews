@@ -1,6 +1,9 @@
 import 'package:apitest/main.dart';
 import 'package:apitest/screen/news_detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:apitest/main_page.dart';
+import 'package:apitest/news_article.dart';
+import 'package:apitest/news_service.dart';
 
 class NewsListScreen extends StatefulWidget {
   const NewsListScreen({super.key});
@@ -36,7 +39,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
             Icon(Icons.electric_car, color: Colors.blue[600], size: 28),
             SizedBox(width: 8),
             Text(
-              'ข่าวทั่วโลก',
+              'ข่าวเทสล่าทั่วโลก',
               style: TextStyle(
                 color: Colors.black87,
                 fontSize: 24,

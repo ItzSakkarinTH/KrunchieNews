@@ -1,6 +1,7 @@
 import 'package:apitest/main.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:apitest/news_article.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final NewsArticle article;
