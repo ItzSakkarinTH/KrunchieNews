@@ -1,5 +1,6 @@
 import 'package:apitest/main.dart';
 import 'package:apitest/screen/news_detail_screen.dart';
+import 'package:apitest/favorite_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:apitest/main_page.dart';
 import 'package:apitest/news_article.dart';
@@ -14,11 +15,26 @@ class NewsListScreen extends StatefulWidget {
 
 class _NewsListScreenState extends State<NewsListScreen> {
   late Future<List<NewsArticle>> _newsFuture;
+  final FavoriteManager _favoriteManager = FavoriteManager();
 
   @override
   void initState() {
     super.initState();
     _newsFuture = NewsService.fetchTeslaNews();
+    // Listen to favorite changes for UI updates
+    _favoriteManager.addListener(_onFavoritesChanged);
+  }
+
+  @override
+  void dispose() {
+    _favoriteManager.removeListener(_onFavoritesChanged);
+    super.dispose();
+  }
+
+  void _onFavoritesChanged() {
+    if (mounted) {
+      setState(() {}); // Update UI when favorites change
+    }
   }
 
   void _refreshNews() {
@@ -49,6 +65,43 @@ class _NewsListScreenState extends State<NewsListScreen> {
           ],
         ),
         actions: [
+          // Badge showing favorites count
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  // Could navigate to favorites screen here if needed
+                },
+                icon: Icon(Icons.favorite, color: Colors.red[400]),
+                tooltip: 'ข่าวโปรด',
+              ),
+              if (_favoriteManager.favoritesCount > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '${_favoriteManager.favoritesCount}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
           IconButton(
             onPressed: _refreshNews,
             icon: Icon(Icons.refresh, color: Colors.blue[600]),
@@ -161,12 +214,32 @@ class _NewsListScreenState extends State<NewsListScreen> {
                 final article = snapshot.data![index];
                 return NewsCard(
                   article: article,
+                  isFavorite: _favoriteManager.isFavorite(article),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
                             NewsDetailScreen(article: article),
+                      ),
+                    );
+                  },
+                  onFavoriteToggle: () {
+                    _favoriteManager.toggleFavorite(article);
+                    
+                    // Show snackbar feedback
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          _favoriteManager.isFavorite(article)
+                              ? 'เพิ่มข่าวในรายการโปรดแล้ว'
+                              : 'ลบข่าวออกจากรายการโปรดแล้ว',
+                        ),
+                        duration: Duration(seconds: 2),
+                        backgroundColor: _favoriteManager.isFavorite(article)
+                            ? Colors.green
+                            : Colors.orange,
+                        behavior: SnackBarBehavior.floating,
                       ),
                     );
                   },
@@ -183,9 +256,17 @@ class _NewsListScreenState extends State<NewsListScreen> {
 // Card แสดงข่าวในรายการ
 class NewsCard extends StatelessWidget {
   final NewsArticle article;
+  final bool isFavorite;
   final VoidCallback onTap;
+  final VoidCallback onFavoriteToggle;
 
-  const NewsCard({super.key, required this.article, required this.onTap});
+  const NewsCard({
+    super.key,
+    required this.article,
+    required this.isFavorite,
+    required this.onTap,
+    required this.onFavoriteToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -211,51 +292,94 @@ class NewsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // รูปภาพข่าว
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                child: Container(
-                  height: 200,
-                  width: double.infinity,
-                  color: Colors.grey[200],
-                  child: article.urlToImage.isNotEmpty
-                      ? Image.network(
-                          article.urlToImage,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
+              // รูปภาพข่าวและปุ่มหัวใจ
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    child: Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: article.urlToImage.isNotEmpty
+                          ? Image.network(
+                              article.urlToImage,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[200],
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    size: 50,
+                                    color: Colors.grey[400],
+                                  ),
+                                );
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  color: Colors.grey[200],
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.blue[400]!,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
                               color: Colors.grey[200],
                               child: Icon(
-                                Icons.image_not_supported,
+                                Icons.electric_car,
                                 size: 50,
                                 color: Colors.grey[400],
                               ),
-                            );
-                          },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              color: Colors.grey[200],
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.blue[400]!,
-                                  ),
-                                ),
+                            ),
+                    ),
+                  ),
+                  
+                  // ปุ่มหัวใจ
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: onFavoriteToggle,
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: Icon(
+                                isFavorite ? Icons.favorite : Icons.favorite_border,
+                                key: ValueKey(isFavorite),
+                                color: isFavorite ? Colors.red[400] : Colors.grey[600],
+                                size: 24,
                               ),
-                            );
-                          },
-                        )
-                      : Container(
-                          color: Colors.grey[200],
-                          child: Icon(
-                            Icons.electric_car,
-                            size: 50,
-                            color: Colors.grey[400],
+                            ),
                           ),
                         ),
-                ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               // เนื้อหาข่าว

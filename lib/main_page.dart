@@ -19,7 +19,7 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = [
     NewsListScreen(), // หน้า 0
     GeneralNewsScreen(), // หน้า 1
-    FavoritesScreen(), // หน้า 2
+    FavoritesScreen(favoriteNews: [],), // หน้า 2
   ];
 
   void _onItemTapped(int index) {

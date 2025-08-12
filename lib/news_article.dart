@@ -34,4 +34,8 @@ class NewsArticle {
       author: json['author'] ?? 'ไม่ระบุผู้เขียน',
     );
   }
+
+  String? get imageUrl => null;
+
+  String? get source => null;
 }
