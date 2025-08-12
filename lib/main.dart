@@ -61,10 +61,12 @@ class NewsService {
     // สร้างวันที่ 30 วันที่ผ่านมาในรูปแบบ YYYY-MM-DD
     final DateTime now = DateTime.now();
     final DateTime fromDate = now.subtract(Duration(days: 30));
-    final String fromDateStr = '${fromDate.year}-${fromDate.month.toString().padLeft(2, '0')}-${fromDate.day.toString().padLeft(2, '0')}';
-    
+    final String fromDateStr =
+        '${fromDate.year}-${fromDate.month.toString().padLeft(2, '0')}-${fromDate.day.toString().padLeft(2, '0')}';
+
     // ใช้ everything endpoint แทน top-headlines
-    final url = '$baseUrl/everything?q=tesla&from=$fromDateStr&sortBy=publishedAt&apiKey=$apiKey';
+    final url =
+        '$baseUrl/everything?q=tesla&from=$fromDateStr&sortBy=publishedAt&apiKey=$apiKey';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -127,7 +129,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
             Icon(Icons.electric_car, color: Colors.blue[600], size: 28),
             SizedBox(width: 8),
             Text(
-              'ข่าว Tesla',
+              'ข่าวทั่วโลก',
               style: TextStyle(
                 color: Colors.black87,
                 fontSize: 24,
@@ -160,7 +162,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'กำลังโหลดข่าว Tesla...',
+                    'กำลังโหลดข่าว...',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                 ],
@@ -215,7 +217,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'ไม่พบข่าว Tesla ในขณะนี้',
+                    'ไม่พบข่าวในขณะนี้',
                     style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 8),
@@ -475,7 +477,6 @@ class NewsDetailScreen extends StatefulWidget {
 }
 
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
