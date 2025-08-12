@@ -1,10 +1,8 @@
-import 'package:apitest/main.dart';
-import 'package:apitest/screen/news_detail_screen.dart';
-import 'package:apitest/favorite_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:apitest/main_page.dart';
-import 'package:apitest/news_article.dart';
-import 'package:apitest/news_service.dart';
+import '../models/news_item.dart';
+import '../favorite_manager.dart';
+import '../news_service.dart';
+import 'news_detail_screen.dart';
 
 class NewsListScreen extends StatefulWidget {
   const NewsListScreen({super.key});
@@ -14,7 +12,7 @@ class NewsListScreen extends StatefulWidget {
 }
 
 class _NewsListScreenState extends State<NewsListScreen> {
-  late Future<List<NewsArticle>> _newsFuture;
+  late Future<List<NewsItem>> _newsFuture;
   final FavoriteManager _favoriteManager = FavoriteManager();
 
   @override
@@ -109,7 +107,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<List<NewsArticle>>(
+      body: FutureBuilder<List<NewsItem>>(
         future: _newsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -255,7 +253,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
 
 // Card แสดงข่าวในรายการ
 class NewsCard extends StatelessWidget {
-  final NewsArticle article;
+  final NewsItem article;
   final bool isFavorite;
   final VoidCallback onTap;
   final VoidCallback onFavoriteToggle;
@@ -301,9 +299,9 @@ class NewsCard extends StatelessWidget {
                       height: 200,
                       width: double.infinity,
                       color: Colors.grey[200],
-                      child: article.urlToImage.isNotEmpty
+                      child: article.imageUrl.isNotEmpty
                           ? Image.network(
-                              article.urlToImage,
+                              article.imageUrl,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
@@ -401,7 +399,7 @@ class NewsCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            article.sourceName,
+                            article.source,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.blue[700],
@@ -449,26 +447,7 @@ class NewsCard extends StatelessWidget {
                       ),
                     SizedBox(height: 12),
 
-                    // ผู้เขียน
-                    if (article.author.isNotEmpty &&
-                        article.author != 'ไม่ระบุผู้เขียน')
-                      Row(
-                        children: [
-                          Icon(Icons.person, size: 14, color: Colors.grey[500]),
-                          SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              article.author,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[500],
-                                fontStyle: FontStyle.italic,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+
                   ],
                 ),
               ),

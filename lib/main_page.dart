@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:apitest/screen/news_list_screen.dart';
-import 'package:apitest/screen/news_detail_screen.dart';
-import 'package:apitest/screen/general_news_screen.dart';
-import 'package:apitest/screen/favorites_screen.dart';
-import 'package:apitest/main.dart';
-import 'package:apitest/news_service.dart';
+import 'screen/news_screen.dart';
+import 'screen/general_news_screen.dart';
+import 'screen/favorites_screen.dart';
+import 'screen/app_screen.dart';
+import 'models/news_item.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -14,36 +13,47 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 0;
+  int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    NewsListScreen(), // หน้า 0
-    GeneralNewsScreen(), // หน้า 1
-    FavoritesScreen(favoriteNews: []), // หน้า 2
+    const GeneralNewsScreen(),
+    const NewsScreen(),
+    const FavoritesScreen(),
+    const AppScreen(),
   ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        selectedItemColor: Colors.blue[600],
+        unselectedItemColor: Colors.grey[600],
+        backgroundColor: Colors.white,
+        elevation: 8,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.electric_car),
-            label: "Tesla",
+            icon: Icon(Icons.public),
+            label: 'ข่าวทั่วไป',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.public), label: "ทั่วไป"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.newspaper),
+            label: 'ข่าวเทคโนโลยี',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
-            label: "Favorite",
+            label: 'รายการโปรด',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.apps),
+            label: 'แอป',
           ),
         ],
       ),

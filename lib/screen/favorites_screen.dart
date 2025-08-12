@@ -1,41 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:apitest/news_article.dart';
-import 'package:apitest/favorite_manager.dart';
-import 'package:apitest/screen/news_detail_screen.dart';
+import 'package:provider/provider.dart';
+import '../models/news_item.dart';
+import '../favorite_manager.dart';
+import 'news_detail_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
-  final List<NewsArticle> favoriteNews; // Keep for backward compatibility
-
-  const FavoritesScreen({super.key, required this.favoriteNews});
+  const FavoritesScreen({super.key});
 
   @override
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
-  final FavoriteManager _favoriteManager = FavoriteManager();
-
   @override
   void initState() {
     super.initState();
-    _favoriteManager.addListener(_onFavoritesChanged);
   }
 
   @override
   void dispose() {
-    _favoriteManager.removeListener(_onFavoritesChanged);
     super.dispose();
-  }
-
-  void _onFavoritesChanged() {
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final favoriteNews = _favoriteManager.favoriteNews;
+    return Consumer<FavoriteManager>(
+      builder: (context, favoriteManager, child) {
+        final favoriteNews = favoriteManager.favoriteNews;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -61,7 +52,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == 'clear_all') {
-                  _showClearAllDialog();
+                  _showClearAllDialog(context.read<FavoriteManager>());
                 }
               },
               itemBuilder: (context) => [
@@ -86,6 +77,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       body: favoriteNews.isEmpty
           ? _buildEmptyState()
           : _buildFavoritesList(favoriteNews),
+    );
+      },
     );
   }
 
@@ -158,7 +151,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-  Widget _buildFavoritesList(List<NewsArticle> favoriteNews) {
+  Widget _buildFavoritesList(List<NewsItem> favoriteNews) {
     return Column(
       children: [
         // Header with count
@@ -227,7 +220,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   );
                 },
                 onRemove: () {
-                  _showRemoveDialog(article);
+                  _showRemoveDialog(article, context.read<FavoriteManager>());
                 },
               );
             },
@@ -237,7 +230,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-  void _showRemoveDialog(NewsArticle article) {
+  void _showRemoveDialog(NewsItem article, FavoriteManager favoriteManager) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -260,7 +253,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                _favoriteManager.removeFavorite(article);
+                favoriteManager.removeFavorite(article);
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -282,7 +275,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-  void _showClearAllDialog() {
+  void _showClearAllDialog(FavoriteManager favoriteManager) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -307,7 +300,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                _favoriteManager.clearAllFavorites();
+                favoriteManager.clearAllFavorites();
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -331,7 +324,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 }
 
 class FavoriteNewsCard extends StatelessWidget {
-  final NewsArticle article;
+  final NewsItem article;
   final VoidCallback onTap;
   final VoidCallback onRemove;
 
@@ -369,7 +362,7 @@ class FavoriteNewsCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
-                  article.urlToImage ??
+                  article.imageUrl.isNotEmpty ? article.imageUrl :
                       'https://via.placeholder.com/100x80?text=No+Image',
                   width: 100,
                   height: 80,
@@ -409,7 +402,7 @@ class FavoriteNewsCard extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      article.source ?? '',
+                      article.source,
                       style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                     ),
                     SizedBox(height: 8),

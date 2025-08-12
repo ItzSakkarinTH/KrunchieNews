@@ -1,41 +1,39 @@
 import 'package:flutter/foundation.dart';
-import 'package:apitest/news_article.dart';
+import 'models/news_item.dart';
 
 class FavoriteManager extends ChangeNotifier {
   static final FavoriteManager _instance = FavoriteManager._internal();
   factory FavoriteManager() => _instance;
   FavoriteManager._internal();
 
-  final List<NewsArticle> _favoriteNews = [];
+  final List<NewsItem> _favoriteNews = [];
 
-  List<NewsArticle> get favoriteNews => List.unmodifiable(_favoriteNews);
+  List<NewsItem> get favoriteNews => List.unmodifiable(_favoriteNews);
 
-  bool isFavorite(NewsArticle article) {
+  bool isFavorite(NewsItem article) {
     return _favoriteNews.any((fav) => fav.url == article.url);
   }
 
-  void toggleFavorite(NewsArticle article) {
+  void toggleFavorite(NewsItem article) {
     final index = _favoriteNews.indexWhere((fav) => fav.url == article.url);
     
     if (index != -1) {
-      // ลบออกจากรายการโปรด
       _favoriteNews.removeAt(index);
     } else {
-      // เพิ่มเข้ารายการโปรด
       _favoriteNews.add(article);
     }
     
     notifyListeners();
   }
 
-  void addFavorite(NewsArticle article) {
+  void addFavorite(NewsItem article) {
     if (!isFavorite(article)) {
       _favoriteNews.add(article);
       notifyListeners();
     }
   }
 
-  void removeFavorite(NewsArticle article) {
+  void removeFavorite(NewsItem article) {
     final index = _favoriteNews.indexWhere((fav) => fav.url == article.url);
     if (index != -1) {
       _favoriteNews.removeAt(index);
