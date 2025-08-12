@@ -1,5 +1,5 @@
 import 'package:apitest/main.dart';
-import 'package:apitest/news_detail_screen.dart';
+import 'package:apitest/screen/news_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class NewsListScreen extends StatefulWidget {
