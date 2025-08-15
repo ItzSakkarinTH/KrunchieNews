@@ -4,7 +4,7 @@
 
 ## หลักการทำงาน
 
-แอป KrunchieNews ใช้ **การจัดการ State แบบ modern** ร่วมกับ **REST API Integration** สำหรับดึงข้อมูลข่าวสารจากแหล่งต่างๆ และนำเสนอในรูปแบบที่อ่านง่าย พร้อมฟีเจอร์การจัดหมวดหมู่และการค้นหา
+แอป KrunchieNews ใช้ **การจัดการ State แบบ modern** ร่วมกับ ** API Integration** สำหรับดึงข้อมูลข่าวสารจากแหล่งต่างๆ และนำเสนอในรูปแบบที่อ่านง่าย พร้อมฟีเจอร์การจัดหมวดหมู่และการค้นหา
 
 ### การจัดการสถานะ (State Management)
 
@@ -551,30 +551,6 @@ Everything (Search):
 - Provider package: `provider: ^6.0.0`
 - NewsAPI Account & API Key
 - Internet permission (Android/iOS)
-
-## การติดตั้งและใช้งาน
-
-### 1. Clone Repository
-```bash
-git clone https://github.com/ItzSakkarinTH/KrunchieNews.git
-cd KrunchieNews
-```
-
-### 2. Install Dependencies
-```bash
-flutter pub get
-```
-
-### 3. Setup API Key
-```dart
-// lib/services/news_service.dart
-static const String apiKey = 'YOUR_NEWSAPI_KEY_HERE';
-```
-
-### 4. Run Application
-```bash
-flutter run
-```
 
 ## คุณสมบัติเด่น
 
